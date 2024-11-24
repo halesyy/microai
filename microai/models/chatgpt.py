@@ -38,26 +38,12 @@ def load_openai_client(api_key: str | None = None):
    return client
 
 def chat(
-   messages: list[Message | ChatCompletionMessageParam | str] | str,
+   messages: list[Message],
    model: ChatModel | str = "gpt-3.5-turbo", 
    api_key: str | None = None
 ):
    client = load_openai_client(api_key)
-   chat_messages: list[ChatCompletionMessageParam] = []
-
-   # I'm unsure if this dynamism is preferable - but I will test with personal experience.
-   if isinstance(messages, list):
-      for m in messages:
-         if isinstance(m, Message):
-            msg: Any = m.model_dump() # Could not solve this irritating type error without assigning to Any
-            chat_messages.append(msg)
-         elif isinstance(m, str):
-            msg: Any = { "content": m, "role": "user" }
-            chat_messages.append(msg)
-         else:
-            chat_messages.append(m)
-   else:
-      chat_messages.append({ "content": messages, "role": "user" })
+   chat_messages: list[Any] = [m.model_dump() for m in messages]
 
    assert len(chat_messages) > 0, f"Messages filtered down unexpectedly: {messages}"
 
@@ -69,7 +55,7 @@ def chat(
    return chat_completion
 
 def chat_message(
-   messages: list[Message | ChatCompletionMessageParam | str] | str,
+   messages: list[Message],
    model: ChatModel | str = "gpt-3.5-turbo", 
    api_key: str | None = None,
    output: bool = False
@@ -83,8 +69,16 @@ def chat_message(
    # NOTE https://cookbook.openai.com/examples/using_logprobs
    msg = choice.message
    if output:
-      print(messages[-1])
-      print(msg.content)
+      last_message = messages[-1]
+      if isinstance(last_message, str):
+         print("[ USER ]", messages)
+      elif isinstance(last_message, Message):
+         print("[ USER ]", last_message.content)
+      else:
+         if "content" in last_message:
+            print("[USER]", last_message["content"])
+      print("[ A.I. ]", msg.content)
+
    return msg
    
 

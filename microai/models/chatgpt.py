@@ -68,19 +68,18 @@ def chat_message(
    # NOTE logprobs is removed here, I want to look into that in the future
    # NOTE https://cookbook.openai.com/examples/using_logprobs
    msg = choice.message
+   
    if output:
-      last_message = messages[-1]
-      if isinstance(last_message, str):
-         print("[ USER ]", messages)
-      elif isinstance(last_message, Message):
-         print("[ USER ]", last_message.content)
-      else:
-         if "content" in last_message:
-            print("[USER]", last_message["content"])
+      print("[ USER ]", messages[-1].content)
       print("[ A.I. ]", msg.content)
 
-   return msg
-   
+   # NOTE by casting to Message type standard, we're losing:
+   # NOTE refusal, role, audio, function_call, tool_calls, 
+   # return msg
+
+   return Message(content=msg.content, role=msg.role)
 
 def text_embedding(text: str, model: OpenAiEmbeddingModels): 
-   ...
+   client = load_openai_client()
+   embedding = client.embeddings.create(input=text, model=model)
+   return embedding.data[0].embedding

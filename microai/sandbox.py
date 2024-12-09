@@ -3,9 +3,10 @@ import json
 from typing import Any, Callable, Literal
 
 from openai import BaseModel
-from microai.models.chatgpt import chat_message
+from microai.models.chatgpt import chat_message, text_embedding
 from microai.models.generic import Message, user_message
 from openai.types.chat_model import ChatModel
+from sklearn.decomposition import PCA
 
 def code(work: str, model: ChatModel = "gpt-3.5-turbo"):
    messages: list[Any | Message] = []
@@ -59,9 +60,11 @@ nodes = [
 ]
 
 def main():
-   # code("make a store onboarding page in pages/onboarding/store.tsx, use NextUI for styling to make it look nice")
-   m = chat_message([user_message("Hello")])
-   print(m)
+   e1 = text_embedding("ass", model="text-embedding-3-small")
+   e2 = text_embedding("bum", model="text-embedding-3-small")
+   # pca = PCA(n_components=2)
+   # vec2d = pca.fit_transform([e1, e2])
+   # print(vec2d)
 
 if __name__ == "__main__":
    main()

@@ -1,4 +1,5 @@
 **/history.json
+.vscode
 
 # ENV
 *.env

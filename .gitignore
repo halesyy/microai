@@ -1,5 +1,7 @@
 **/history.json
 .vscode
+sandbox/**
+.DS_Store
 
 # ENV
 *.env
